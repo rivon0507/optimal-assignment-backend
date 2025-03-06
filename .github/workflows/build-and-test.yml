@@ -34,10 +34,10 @@ jobs:
       - name: Create application-local.properties
         run: |
           cd src/main/resources
-          echo spring.data.redis.username= >> application-local.properties 
-          spring.data.redis.password= >> application-local.properties
-          spring.data.redis.host=127.0.0.1 >> application-local.properties
-          spring.data.redis.port=6379 >> application-local.properties
+          echo "spring.data.redis.username=" > application-local.properties 
+          echo "spring.data.redis.password=" >> application-local.properties
+          echo "spring.data.redis.host=127.0.0.1" >> application-local.properties
+          echo "spring.data.redis.port=6379" >> application-local.properties
 
       - name: Run Gradle checks
         run: ./gradlew build check --continue
