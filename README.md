@@ -1,7 +1,8 @@
-
 # Optimal Assignment Backend
 
-This is the backend service for the **Optimal Assignment Problem Solver**. It provides a REST API for solving assignment problems, utilizing an efficient algorithm to compute the optimal solution. The results are processed asynchronously, and intermediate steps are stored in **Redis** for real-time updates.
+This is the backend service for the **Optimal Assignment Problem Solver**. It provides a REST API for solving assignment
+problems, utilizing an efficient algorithm to compute the optimal solution. The results are processed asynchronously,
+and intermediate steps are stored in **Redis** for real-time updates.
 
 ## Features
 
@@ -27,21 +28,30 @@ This is the backend service for the **Optimal Assignment Problem Solver**. It pr
 To run the backend locally, make sure you have the following installed:
 
 - **Java 21** or later.
-- **MariaDB** (if you choose to persist results).
-- **Redis** (for caching and job data storage).
+- **MariaDB**.
+- **Redis**.
 
 ## Getting Started
 
-### 1. Fork the repository
+### Fork the repository
 
-### 2. Clone the Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/optimal-assignment-backend.git
 cd optimal-assignment-backend
 ```
 
-### 3. Build the Project
+### Creating `application-local.properties`
+
+You will create a `application-local.properties` file in the `src/main/resources` directory of the back-end project.
+This file is not version-controlled and should contain your local environment-specific configurations.
+
+1. Navigate to the `back-end/src/main/resources` directory.
+2. Copy the `application-local.properties.example` file and rename the copy to `application-local.properties`.
+3. Open `application-local.properties` and fill in the necessary details
+
+### Build the Project
 
 Build the project using Gradle:
 
@@ -49,9 +59,7 @@ Build the project using Gradle:
 ./gradlew build
 ```
 
-### 4. Set Up Redis and MariaDB (Optional)
-
-### 5. Run the Application
+### Run the Application
 
 Run the backend application:
 
@@ -61,13 +69,9 @@ Run the backend application:
 
 By default, the backend runs on `http://localhost:8080`.
 
-### 6. Access the API
+### Access the API
 
 Once the backend is up and running, you can access the API endpoints at `http://localhost:8080`.
-
-### 7. Persist Final Results (Optional)
-
-If you want to persist the final results to MariaDB, configure the **application.properties** with your database connection details.
 
 ## Tests
 
