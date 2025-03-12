@@ -4,7 +4,7 @@ import io.github.rivon0507.optimalassignment.backend.dto.AssignmentSolverRespons
 import io.github.rivon0507.optimalassignment.backend.enums.JobStatus;
 import io.github.rivon0507.optimalassignment.backend.model.SolverJob;
 import io.github.rivon0507.optimalassignment.backend.model.SolverSnapshot;
-import io.github.rivon0507.optimalassignment.backend.service.AssignmentJobService;
+import io.github.rivon0507.optimalassignment.backend.service.AssignmentJobManager;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = AssignmentSolverController.class, includeFilters = {
         @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
-                classes = {AssignmentJobService.class}
+                classes = {AssignmentJobManager.class}
         )
 })
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -40,19 +40,19 @@ class AssignmentSolverControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private AssignmentJobService assignmentJobService;
+    private AssignmentJobManager assignmentJobManager;
 
     @Nested
     class LaunchJob {
         @Test
         void shouldReturnTheJobIdWith202Status() throws Exception {
-            given(assignmentJobService.launchJob(any())).willReturn("a-good-id");
+            given(assignmentJobManager.launchJob(any())).willReturn("a-good-id");
             mockMvc.perform(post("/assignments")
                             .contentType("application/json")
                             .content("{\"optimization\": \"min\", \"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}"))
                     .andExpect(status().isAccepted())
                     .andExpect(jsonPath("$.job_id").value("a-good-id"));
-            verify(assignmentJobService).launchJob(argThat(assignmentRequest -> {
+            verify(assignmentJobManager).launchJob(argThat(assignmentRequest -> {
                 long[][] matrix = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
                 return assignmentRequest.optimization().equals("min")
                        && IntStream.range(0, 3).allMatch(i -> Arrays.equals(assignmentRequest.matrix()[i], matrix[i]));
@@ -65,7 +65,7 @@ class AssignmentSolverControllerTest {
                             .contentType("application/json")
                             .content("{\"optimization\": 0}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
         }
 
         @Test
@@ -78,7 +78,7 @@ class AssignmentSolverControllerTest {
                             .contentType("application/json")
                             .content("{\"optimization\": \"min\", \"matrix\": \"alala\"}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
         }
 
         @Test
@@ -87,7 +87,7 @@ class AssignmentSolverControllerTest {
                             .contentType("application/json")
                             .content("{\"matrix\": [[1, 2], [3, 4]]}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
         }
 
         @Test
@@ -96,22 +96,22 @@ class AssignmentSolverControllerTest {
                             .contentType("application/json")
                             .content("{\"optimization\": -1, \"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
             mockMvc.perform(post("/assignments")
                             .contentType("application/json")
                             .content("{\"optimization\": 2, \"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
             mockMvc.perform(post("/assignments")
                             .contentType("application/json")
                             .content("{\"optimization\": \"hehe\", \"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
             mockMvc.perform(post("/assignments")
                             .contentType("application/json")
                             .content("{\"optimization\": null, \"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}"))
                     .andExpect(status().isBadRequest());
-            verify(assignmentJobService, never()).launchJob(any());
+            verify(assignmentJobManager, never()).launchJob(any());
         }
     }
 
@@ -131,7 +131,7 @@ class AssignmentSolverControllerTest {
                             .withCurrentStep("a-step")
                             .build())
             );
-            given(assignmentJobService.getJob(jobId)).willReturn(response);
+            given(assignmentJobManager.getJob(jobId)).willReturn(response);
             mockMvc.perform(get("/assignments/" + jobId))
                     .andExpect(status().isOk())
                     .andExpectAll(
@@ -143,13 +143,13 @@ class AssignmentSolverControllerTest {
                             jsonPath("$.snapshots[0].currentStep").value("a-step"),
                             jsonPath("$.snapshots[0].matrix").isEmpty()
                     );
-            verify(assignmentJobService).getJob(eq(jobId));
+            verify(assignmentJobManager).getJob(eq(jobId));
         }
 
         @Test
         void shouldReturn404IfJobNotFound() throws Exception {
             String jobId = "a-good-id";
-            given(assignmentJobService.getJob(jobId)).willReturn(null);
+            given(assignmentJobManager.getJob(jobId)).willReturn(null);
             mockMvc.perform(get("/assignments/" + jobId))
                     .andExpect(status().isNotFound());
         }
