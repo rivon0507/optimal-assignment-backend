@@ -29,6 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("io.github.rivon0507:or-assignment-problem:0.2.0")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
