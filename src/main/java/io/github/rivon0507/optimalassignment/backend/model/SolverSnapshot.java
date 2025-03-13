@@ -1,7 +1,7 @@
 package io.github.rivon0507.optimalassignment.backend.model;
 
+import io.github.rivon0507.optimalassignment.backend.util.Coords;
 import io.github.rivon0507.or.assignmentproblem.AssignmentSolver;
-import io.github.rivon0507.or.assignmentproblem.Coord;
 import lombok.Data;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +27,8 @@ public class SolverSnapshot {
     private Long ceiling;
     private Integer[] markedRows;
     private Integer[] markedCols;
-    private Coord[] framedZeroes;
-    private Coord[] struckOutZeroes;
+    private Coords[] framedZeroes;
+    private Coords[] struckOutZeroes;
     private Integer[] rowMinCols;
     private Integer[] colMinRow;
 
@@ -48,8 +48,8 @@ public class SolverSnapshot {
         setCeiling(solver.getCeiling());
         setMarkedRows(solver.getMarkedRows().isEmpty() ? null : solver.getMarkedRows().toArray(Integer[]::new));
         setMarkedCols(solver.getMarkedCols().isEmpty() ? null : solver.getMarkedCols().toArray(Integer[]::new));
-        setFramedZeroes(solver.getFramedZeroes().isEmpty() ? null : solver.getFramedZeroes().toArray(new Coord[0]));
-        setStruckOutZeroes(solver.getStruckOutZeroes().isEmpty() ? null : solver.getStruckOutZeroes().toArray(new Coord[0]));
+        setFramedZeroes(solver.getFramedZeroes().isEmpty() ? null : solver.getFramedZeroes().stream().map(Coords::new).toArray(Coords[]::new));
+        setStruckOutZeroes(solver.getStruckOutZeroes().isEmpty() ? null : solver.getStruckOutZeroes().stream().map(Coords::new).toArray(Coords[]::new));
         setRowMinCols(solver.getRowMinCols().isEmpty() ? null : solver.getRowMinCols().toArray(Integer[]::new));
         setColMinRow(solver.getColMinRows().isEmpty() ? null : solver.getColMinRows().toArray(Integer[]::new));
     }
