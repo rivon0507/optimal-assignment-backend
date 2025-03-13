@@ -5,6 +5,7 @@ import io.github.rivon0507.optimalassignment.backend.enums.JobStatus;
 import io.github.rivon0507.optimalassignment.backend.model.SolverJob;
 import io.github.rivon0507.optimalassignment.backend.model.SolverSnapshot;
 import io.github.rivon0507.optimalassignment.backend.service.AssignmentJobManager;
+import io.github.rivon0507.or.assignmentproblem.AssignmentSolver;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,17 @@ class AssignmentSolverControllerTest {
     class GetJob {
         @Test
         void shouldReturnTheJobInfoWith200Status() throws Exception {
+            long[][] matrix = {
+                    {14, 6, 18, 16, 63, 15},
+                    {41, 78, 44, 73, 70, 25},
+                    {44, 81, 36, 80, 80, 78},
+                    {46, 74, 5, 25, 83, 3},
+                    {72, 32, 55, 51, 3, 81},
+                    {69, 76, 12, 99, 83, 80}
+            };
+            AssignmentSolver solver = new AssignmentSolver();
+            solver.configure(matrix, AssignmentSolver.OptimizationType.MAXIMIZE);
+            solver.solve();
             String jobId = "a-good-id";
             AssignmentSolverResponse response = new AssignmentSolverResponse(
                     SolverJob.builder()
@@ -129,6 +141,7 @@ class AssignmentSolverControllerTest {
                     List.of(SolverSnapshot.builder()
                             .withJobId(jobId)
                             .withCurrentStep("a-step")
+                            .withSnapshot(solver)
                             .build())
             );
             given(assignmentJobManager.getJob(jobId)).willReturn(response);
@@ -141,7 +154,11 @@ class AssignmentSolverControllerTest {
                             jsonPath("$.snapshots").isArray(),
                             jsonPath("$.snapshots[0].jobId").value(jobId),
                             jsonPath("$.snapshots[0].currentStep").value("a-step"),
-                            jsonPath("$.snapshots[0].matrix").isEmpty()
+                            jsonPath("$.snapshots[0].matrix").exists(),
+                            jsonPath("$.snapshots[0].framedZeroes[0].r").exists(),
+                            jsonPath("$.snapshots[0].framedZeroes[0].c").exists(),
+                            jsonPath("$.snapshots[0].struckOutZeroes[0].r").exists(),
+                            jsonPath("$.snapshots[0].struckOutZeroes[0].c").exists()
                     );
             verify(assignmentJobManager).getJob(eq(jobId));
         }
