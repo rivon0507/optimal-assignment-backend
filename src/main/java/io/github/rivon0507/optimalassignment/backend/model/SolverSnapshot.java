@@ -22,7 +22,7 @@ public class SolverSnapshot {
     private AssignmentSolver.SolverState state;
     private List<String> matrix;
     private AssignmentSolver.OptimizationType optimizationType;
-    private Long[] solution;
+    private Integer[] solution;
     private Long optimalValue;
     private Long ceiling;
     private Integer[] markedRows;
@@ -43,7 +43,7 @@ public class SolverSnapshot {
                 .collect(Collectors.toList())
         );
         setOptimizationType(solver.getOptimization());
-        setSolution(solver.isSolved() ? Arrays.stream(solver.getSolution()).boxed().toArray(Long[]::new) : null);
+        setSolution(solver.isSolved() ? Arrays.stream(solver.getSolution()).boxed().toArray(Integer[]::new) : null);
         setOptimalValue(solver.getOptimalValue());
         setCeiling(solver.getCeiling());
         setMarkedRows(solver.getMarkedRows().isEmpty() ? null : solver.getMarkedRows().toArray(Integer[]::new));
